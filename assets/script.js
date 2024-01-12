@@ -1,5 +1,33 @@
+const apiKey = 'dea958ca793d7639b784b973c04d7c27';
+
+let submitButton = document.getElementById('search-button')
+
+submitButton.addEventListener('click', function(event){
+    event.preventDefault();
+
+let city = document.getElementById("search-input").value;
+
+localStorage.setItem("City", city);
+
+})
 //- build a query url for location name
+
+let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${APIKEY}`;
+
+fetch(queryURL)
+ .then(function (response){
+    return response.json()
+ })
+ .then(function(data){
+    console.log(data);
+    let latLoc = data[0].lat;
+    let lonLoc = data[0].lon;
+
+    forecast(latLoc,lonLoc);
+ })
 //    - to get coordinates for the second query
+
+
 //- send query to get coordinates
 
 //- build a query url for weather data
