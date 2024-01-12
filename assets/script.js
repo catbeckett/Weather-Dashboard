@@ -12,7 +12,7 @@ localStorage.setItem("City", city);
 })
 //- build a query url for location name
 
-let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${APIKEY}`;
+let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKEY}`;
 
 fetch(queryURL)
  .then(function (response){
@@ -26,6 +26,18 @@ fetch(queryURL)
     forecast(latLoc,lonLoc);
  })
 //    - to get coordinates for the second query
+function forecast(lat,lon) {
+    let queryUrlWeather = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKEY}`
+    
+    fetch(queryUrlWeather)
+    .then(function (response){
+       return response.json()
+    })
+    .then(function(data){
+       console.log(data);
+    })
+
+}
 
 
 //- send query to get coordinates
