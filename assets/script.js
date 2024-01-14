@@ -1,35 +1,36 @@
 const apiKey = 'dea958ca793d7639b784b973c04d7c27';
 
-let submitButton = document.getElementById('search-button')
+let submitButton = document.getElementById('search-button');
+
+let city; // declare the city variable outside the event handler
 
 submitButton.addEventListener('click', function(event){
     event.preventDefault();
 
-let city = document.getElementById("search-input").value;
+    city = document.getElementById("search-input").value;
 
-localStorage.setItem("City", city);
+    localStorage.setItem("City", city);
 
-})
-//- build a query url for location name
+    //- build a query url for location name
+    let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
 
-let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKEY}`;
+    fetch(queryURL)
+     .then(function (response){
+        return response.json()
+     })
+     .then(function(data){
+        console.log(data);
+        let latLoc = data[0].lat;
+        let lonLoc = data[0].lon;
 
-fetch(queryURL)
- .then(function (response){
-    return response.json()
- })
- .then(function(data){
-    console.log(data);
-    let latLoc = data[0].lat;
-    let lonLoc = data[0].lon;
-
-    forecast(latLoc,lonLoc);
- })
+        forecast(latLoc,lonLoc);
+     });
+});
 //    - to get coordinates for the second query
 function forecast(lat,lon) {
-    let queryUrlWeather = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKEY}`
+    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKEY}`
     
-    fetch(queryUrlWeather)
+    fetch(forecastWeather)
     .then(function (response){
        return response.json()
     })
@@ -39,8 +40,50 @@ function forecast(lat,lon) {
 
 }
 
+function currentDay(lat,lon){
+   let currentDayURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=$[lon}&appid=${apiKEY}`;
+}
 
+function createBox(forecastData) {
+
+let currentElement = document.createElement('div');
+currentElement.setAttribute('id', 'current-data');
+
+let cityNameElement = document.createElement('h1');
+cityNameElement.innerText = forecastData.name;
+currentElement.appendChild(cityNameElement);
+
+let dateElement = document.createElement('p');
+let currentDate = new Date();
+dateElement.innerText = currentDate.toLocaleDateString();
+currentElement.appendChild(dateElement);
+
+let iconElement = document.createElement('img');
+iconElement.setAttribute('src', forecastData.current.condition.icon);
+currentElement.appendChild(iconElement);
+
+let tempElement = document.createElement('p');
+tempElement.innerText = `Temperature: ${forecastData.current.temp_c}°C`;
+currentElement.appendChild(tempElement);
+
+let humidityElement = document.createElement('p');
+humidityElement.innerText = `Humidity: ${forecastData.current.humidity}%`;
+currentElement.appendChild(humidityElement);
+
+let windspeedElement = document.createElement('p');
+windspeedElement.innerText = `Wind Speed: ${forecastData.current.wind_kph} km/h`;
+currentElement.appendChild(windspeedElement);
+
+// Find place in DOM to attach new element
+let containerElement = document.getElementById('today');
+containerElement.appendChild(currentElement);
+
+// For loop over the weather data from the forecast api
+forecastData.forecast.forecastday.forEach((day) => {
+   // build elements and append to container
+}); }
 //- send query to get coordinates
+
 
 //- build a query url for weather data
 //    - use coordinates from previous
