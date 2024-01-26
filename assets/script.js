@@ -64,7 +64,6 @@ function createCurrentElement(weatherData) {
     containerElement.appendChild(currentElement);
 }
 
-// Function to build elements for 5-day forecast
 function createForecastElements(forecastData) {
     const forecastElement = document.getElementById('forecast');
     forecastElement.innerHTML = ''; // Clear existing content
@@ -81,8 +80,10 @@ function createForecastElements(forecastData) {
         iconElement.setAttribute('src', `https://openweathermap.org/img/wn/${day.weather[0].icon}.png`);
         cardElement.appendChild(iconElement);
 
+        // Convert temperature from Kelvin to Celsius
+        const tempInCelsius = (day.main.temp - 273.15).toFixed(2);
         const tempElement = document.createElement('p');
-        tempElement.innerText = `Temperature: ${day.main.temp}°C`;
+        tempElement.innerText = `Temperature: ${tempInCelsius}°C`;
         cardElement.appendChild(tempElement);
 
         const humidityElement = document.createElement('p');
@@ -92,6 +93,7 @@ function createForecastElements(forecastData) {
         forecastElement.appendChild(cardElement);
     });
 }
+
 
 // Function to get 5-day forecast
 function getForecast(coordinates) {

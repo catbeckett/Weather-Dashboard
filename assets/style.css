@@ -67,18 +67,26 @@ h6 {
   isolation: isolate;
 }
 
-
 /* CSS for forecast cards */
+#forecast {
+  display: flex;
+  flex-wrap: wrap; /* Allow cards to wrap to next row */
+  justify-content: space-around; /* Distribute cards evenly */
+  padding: 10px;
+}
+
 .card {
+  flex: 0 0 calc(20% - 20px); /* Set each card to occupy 20% of the container width with some margin */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
-  margin: 5px;
+  padding: 5px; /* Reduce padding to reduce spacing between cards */
+  margin: 5px; /* Reduce margin to reduce spacing between cards */
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 120px; /* Adjust the width as needed */
+  background-color: rgb(48, 48, 83); /* Set the background color to dark blue */
+  color: rgb(71, 73, 130); /* Set the text color to white for better contrast */
 }
 
 .card img {
