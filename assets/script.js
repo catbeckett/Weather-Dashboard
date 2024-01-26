@@ -1,151 +1,128 @@
-const apiKey = 'dea958ca793d7639b784b973c04d7c27';
+const apiKey = '36f0cbd6e9a722edf8afd95a5a140306';
 
-let submitButton = document.getElementById('search-button');
+// Function to build a query URL for location name and get coordinates
+function getLocationCoordinates(city) {
+    const locationURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
+    return fetch(locationURL)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const coordinates = {
+                    lat: data[0].lat,
+                    lon: data[0].lon
+                };
+                return coordinates;
+            } else {
+                throw new Error('Location data not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching location coordinates:', error);
+            throw error;
+        });
+}
 
-let city; // declare the city variable outside the event handler
+// Function to build a query URL for weather data and get current data
+function getCurrentWeather(coordinates) {
+    const weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}`;
+    return fetch(weatherURL)
+        .then(response => response.json());
+}
 
-submitButton.addEventListener('click', function(event){
+// Function to build an element for current weather data
+function createCurrentElement(weatherData) {
+    const currentElement = document.createElement('div');
+    currentElement.setAttribute('id', 'current-data');
+
+    const cityNameElement = document.createElement('h1');
+    cityNameElement.innerText = weatherData.name;
+    currentElement.appendChild(cityNameElement);
+
+    const dateElement = document.createElement('p');
+    dateElement.innerText = new Date().toLocaleDateString();
+    currentElement.appendChild(dateElement);
+
+    const iconElement = document.createElement('img');
+    iconElement.setAttribute('src', `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`);
+    currentElement.appendChild(iconElement);
+
+    const tempElement = document.createElement('p');
+    const tempInCelsius = (weatherData.main.temp - 273.15).toFixed(2);
+    tempElement.innerText = `Temperature: ${tempInCelsius}°C`;
+    currentElement.appendChild(tempElement);
+
+    const humidityElement = document.createElement('p');
+    humidityElement.innerText = `Humidity: ${weatherData.main.humidity}%`;
+    currentElement.appendChild(humidityElement);
+
+    const windspeedElement = document.createElement('p');
+    windspeedElement.innerText = `Wind Speed: ${weatherData.wind.speed} km/h`;
+    currentElement.appendChild(windspeedElement);
+
+    const containerElement = document.getElementById('today');
+    containerElement.innerHTML = ''; // Clear existing content
+    containerElement.appendChild(currentElement);
+}
+
+// Function to build elements for 5-day forecast
+function createForecastElements(forecastData) {
+    const forecastElement = document.getElementById('forecast');
+    forecastElement.innerHTML = ''; // Clear existing content
+
+    forecastData.list.slice(0, 5).forEach(day => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('card');
+
+        const dateElement = document.createElement('p');
+        dateElement.innerText = new Date(day.dt * 1000).toLocaleDateString();
+        cardElement.appendChild(dateElement);
+
+        const iconElement = document.createElement('img');
+        iconElement.setAttribute('src', `https://openweathermap.org/img/wn/${day.weather[0].icon}.png`);
+        cardElement.appendChild(iconElement);
+
+        const tempElement = document.createElement('p');
+        tempElement.innerText = `Temperature: ${day.main.temp}°C`;
+        cardElement.appendChild(tempElement);
+
+        const humidityElement = document.createElement('p');
+        humidityElement.innerText = `Humidity: ${day.main.humidity}%`;
+        cardElement.appendChild(humidityElement);
+
+        forecastElement.appendChild(cardElement);
+    });
+}
+
+// Function to get 5-day forecast
+function getForecast(coordinates) {
+    const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}`;
+    return fetch(forecastURL)
+        .then(response => response.json());
+}
+
+// Function to initiate API calls when the button is clicked
+function submitSearch() {
+    const cityInput = document.getElementById('search-input').value;
+    localStorage.setItem('City', cityInput);
+
+    getLocationCoordinates(cityInput)
+        .then(coordinates => {
+            getCurrentWeather(coordinates)
+                .then(currentWeather => createCurrentElement(currentWeather));
+            getForecast(coordinates)
+                .then(forecastData => createForecastElements(forecastData));
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Event listener for the submit button
+document.getElementById('search-button').addEventListener('click', function (event) {
     event.preventDefault();
-
-    city = document.getElementById("search-input").value;
-
-    localStorage.setItem("City", city);
-
-    //- build a query url for location name
-    let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
-
-    fetch(queryURL)
-     .then(function (response){
-        return response.json()
-     })
-     .then(function(data){
-        console.log(data);
-        let latLoc = data[0].lat;
-        let lonLoc = data[0].lon;
-
-        forecast(latLoc,lonLoc);
-     });
+    submitSearch();
 });
-//    - to get coordinates for the second query
-function forecast(lat,lon) {
-    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKEY}`
-    
-    fetch(forecastWeather)
-    .then(function (response){
-       return response.json()
-    })
-    .then(function(data){
-       console.log(data);
-    })
 
+// Display current data and 5-day forecast on page load
+const storedCity = localStorage.getItem('City');
+if (storedCity) {
+    submitSearch();
 }
-
-function currentDay(lat,lon){
-   let currentDayURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=$[lon}&appid=${apiKEY}`;
-}
-
-function createBox(forecastData) {
-
-let currentElement = document.createElement('div');
-currentElement.setAttribute('id', 'current-data');
-
-let cityNameElement = document.createElement('h1');
-cityNameElement.innerText = forecastData.name;
-currentElement.appendChild(cityNameElement);
-
-let dateElement = document.createElement('p');
-let currentDate = new Date();
-dateElement.innerText = currentDate.toLocaleDateString();
-currentElement.appendChild(dateElement);
-
-let iconElement = document.createElement('img');
-iconElement.setAttribute('src', forecastData.current.condition.icon);
-currentElement.appendChild(iconElement);
-
-let tempElement = document.createElement('p');
-tempElement.innerText = `Temperature: ${forecastData.current.temp_c}°C`;
-currentElement.appendChild(tempElement);
-
-let humidityElement = document.createElement('p');
-humidityElement.innerText = `Humidity: ${forecastData.current.humidity}%`;
-currentElement.appendChild(humidityElement);
-
-let windspeedElement = document.createElement('p');
-windspeedElement.innerText = `Wind Speed: ${forecastData.current.wind_kph} km/h`;
-currentElement.appendChild(windspeedElement);
-
-// Find place in DOM to attach new element
-let containerElement = document.getElementById('today');
-containerElement.appendChild(currentElement);
-
-// For loop over the weather data from the forecast api
-forecastData.forecast.forecastday.forEach((day) => {
-   // build elements and append to container
-}); }
-//- send query to get coordinates
-
-
-//- build a query url for weather data
-//    - use coordinates from previous
-//- send query for weather data
-
-//- build an element to hold/show the current data
-//    - this could be a header-style element
-//        - city name
-//                - h1/h2
-//            - date
-//                - p
-//            - icon
-//                - img
-//            - temp
-//                - p
-//            - humidity
-//                - p
-//            - wind speed
-//                - p
-//- find place in DOM to attach new element
-//    - "#today" element
-
-//- for loop over the weather data from the forecast api
-//- build elements for 5-day forecast
-//    - multiple elements (one per day)
-//        - bootstrap card
-//            - city name
-//                - h1/h2
-//            - date
-//                - p
-//            - icon
-//                - img
-//            - temp
-//                - p
-//            - humidity
-//                - p
-//            - wind speed
-//                - p
-//        - one row of 5 cards
-//- find place in DOM to attach new elements
-//    - "#forecast" element
-//
-//- "submit" function to initiate the api calls when the button is clicked
-//    - take value from input
-//        - save to localstorage
-//        - used in API call for coordinates
-//
-//- display current data
-//    - city name
-//    - date
-//    - icon
-//    - temperature
-//    - humidity
-//    - wind speed
-//- display 5-day forecast
-//    - date
-//    - icon
-//    - temperature
-//    - humidity
-
-//- search history
-//    - localstorage
-//        - an array
-//            - just city names
-//        - store as json
