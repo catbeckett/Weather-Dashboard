@@ -70,30 +70,49 @@ h6 {
 /* CSS for forecast cards */
 #forecast {
   display: flex;
-  flex-wrap: wrap; /* Allow cards to wrap to next row */
+  flex-wrap: wrap; /* Allow cards to wrap to the next row */
   justify-content: space-around; /* Distribute cards evenly */
   padding: 10px;
 }
 
-.card {
+#forecast .card {
   flex: 0 0 calc(20% - 20px); /* Set each card to occupy 20% of the container width with some margin */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 5px; /* Reduce padding to reduce spacing between cards */
-  margin: 5px; /* Reduce margin to reduce spacing between cards */
+  margin: 5px 0;
+  text-align: left; /* Set text alignment to left */
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: rgb(48, 48, 83); /* Set the background color to dark blue */
-  color: rgb(71, 73, 130); /* Set the text color to white for better contrast */
+  background-color: #4b6cb7; /* Set the background color to a grey/blue shade */
+  color: white; /* Set the text color to white for better contrast */
 }
 
-.card img {
+#forecast .card img {
   width: 50px; /* Adjust the icon size as needed */
   height: 50px;
 }
 
-.card p {
+#forecast .card p {
   margin: 5px 0;
+}
+
+.search-button {
+  width: calc(100% - 140px); /* Adjust the width to match the search input bar */
+  background-color: #4b6cb7; /* Blue background color */
+  color: white; /* White text color */
+  border: none; /* Remove border */
+  padding: 10px 15px; /* Adjust padding to reduce button width */
+  border-radius: 5px; /* Add border radius */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+  cursor: pointer; /* Add cursor pointer */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+
+/* Hover effect */
+.search-button:hover {
+  background-color: #3c5da6; /* Darker blue on hover */
 }
